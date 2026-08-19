@@ -42,3 +42,6 @@ Project Structure
 
 ``` ├── models.py # Model architectures (AOD-Net, Attention U-Net, GAN) ├── dark_channel_prior.py # Classical DCP baseline ├── utils.py # Metrics, dataset loading, weather detection ├── train.py # Training script ├── evaluate.py # Test-set evaluation and comparison table ├── web_app.py # Flask web application ├── templates/index.html # Frontend UI ├── static/ # CSS and JavaScript └── saved_models/ # Trained model weights (.keras) ```
 
+## Known Limitations
+
+- **GAN output quality**: Due to CPU-only training on limited hardware, the GAN model was trained for fewer epochs than ideal for adversarial networks (which typically require substantially more iterations to converge than supervised models). This results in visible artifacts and softer detail in GAN outputs compared to Attention U-Net. With GPU-accelerated training and more epochs, GAN output quality would be expected to improve significantly and align with published benchmarks.
