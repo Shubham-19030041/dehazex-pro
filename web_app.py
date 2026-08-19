@@ -1,8 +1,8 @@
-
 import os
 import io
 import time
 import base64
+import gc
 
 import numpy as np
 from PIL import Image
@@ -27,13 +27,18 @@ MODEL_KEYS = {
 }
 DCP_NAME = "DCP"
 
-_loaded_models = {}
-
 
 def get_model(display_name):
-    """Lazy-load and cache a trained model. Raises if not trained yet."""
-    if display_name in _loaded_models:
-        return _loaded_models[display_name]
+    """Load a trained model fresh each time (no persistent caching).
+
+    Render's free tier has only 512MB RAM. Keeping multiple TensorFlow
+    models loaded simultaneously (as a cache would) reliably exceeds this
+    and causes OOM crashes, which show up as confusing 'expected N
+    variables, received 0' errors on the NEXT request rather than a clear
+    out-of-memory message. Loading fresh and freeing immediately after use
+    (see run_model below) trades some speed for staying within memory
+    limits — the right tradeoff for a free-tier demo deployment.
+    """
     path = os.path.join(SAVE_DIR, MODEL_KEYS[display_name])
     if not os.path.exists(path):
         raise FileNotFoundError(
@@ -43,9 +48,7 @@ def get_model(display_name):
     # safe_mode=False is required because AOD-Net uses a Lambda layer for its
     # K(x)*I(x) - K(x) + 1 formula; this is safe since we're loading our own
     # trained model, not one from an untrusted source.
-    model = tf.keras.models.load_model(path, compile=False, safe_mode=False)
-    _loaded_models[display_name] = model
-    return model
+    return tf.keras.models.load_model(path, compile=False, safe_mode=False)
 
 
 MAX_DISPLAY_DIM = 1024  # cap upscaled display size so huge photos don't bloat the response
@@ -84,6 +87,13 @@ def run_model(display_name, hazy_img):
     else:
         model = get_model(display_name)
         dehazed = model.predict(hazy_img[None, ...], verbose=0)[0]
+        # Free the model and clear TensorFlow's backend session immediately —
+        # critical on memory-constrained deployments (e.g. Render free tier's
+        # 512MB limit). Without this, repeated requests accumulate memory
+        # until the process gets OOM-killed.
+        del model
+        tf.keras.backend.clear_session()
+        gc.collect()
     elapsed_ms = (time.time() - start) * 1000
     dehazed = np.clip(dehazed, 0, 1)
     return dehazed, elapsed_ms
