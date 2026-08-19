@@ -42,6 +42,3 @@ Project Structure
 
 ``` ├── models.py # Model architectures (AOD-Net, Attention U-Net, GAN) ├── dark_channel_prior.py # Classical DCP baseline ├── utils.py # Metrics, dataset loading, weather detection ├── train.py # Training script ├── evaluate.py # Test-set evaluation and comparison table ├── web_app.py # Flask web application ├── templates/index.html # Frontend UI ├── static/ # CSS and JavaScript └── saved_models/ # Trained model weights (.keras) ```
 
-Deployment
-
-This app is deployable to platforms like Render (backend) via the included `Procfile` and `requirements-web.txt`.
