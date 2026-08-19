@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+venv/
+env/
+dataset/
+outputs/*_loss.png
+.DS_Store
+Thumbs.db
+.vscode/
+*.log

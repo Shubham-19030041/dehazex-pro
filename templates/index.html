@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeHazeX Pro</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-icon">▣</span>
+    <div>
+      <h1>DeHazeX Pro</h1>
+      <p>IMAGE-DEHAZING — CNN · Attention U-Net · GAN · DCP | Web Version</p>
+    </div>
+  </div>
+  <span class="cpu-pill">CPU Mode</span>
+</header>
+
+<nav class="tabbar">
+  <button class="tab active" data-tab="single">Single Image</button>
+  <button class="tab" data-tab="compare">Compare</button>
+  <button class="tab" data-tab="about">About</button>
+</nav>
+
+<main>
+  <!-- SINGLE IMAGE TAB -->
+  <section id="tab-single" class="tab-panel active">
+
+    <div class="controls-bar">
+      <label class="model-select">
+        Model:
+        <select id="modelSelect">
+          <option value="Attention-UNet">Attention-UNet</option>
+          <option value="AOD-Net">AOD-Net</option>
+          <option value="GAN">GAN</option>
+          <option value="DCP">DCP (Classical)</option>
+        </select>
+      </label>
+
+      <input type="file" id="fileInput" accept="image/*" hidden>
+      <button class="btn btn-upload" id="uploadBtn">Upload</button>
+      <button class="btn btn-dehaze" id="dehazeBtn">Dehaze</button>
+      <button class="btn btn-all" id="allModelsBtn">All 4 Models</button>
+      <button class="btn btn-save" id="saveBtn" disabled>Save</button>
+      <label class="auto-select">
+        <input type="checkbox" id="autoSelect"> Auto Select
+      </label>
+      <span class="status-pill" id="statusPill">Ready</span>
+    </div>
+
+    <div class="image-grid">
+      <div class="image-panel">
+        <div class="panel-header">
+          <span class="panel-label input">Input: Hazy Image</span>
+          <span class="badge" id="densityBadge">—</span>
+          <span class="badge badge-blue" id="weatherBadge">—</span>
+        </div>
+        <div class="image-box" id="inputBox">
+          <span class="placeholder">Upload an image to begin</span>
+        </div>
+      </div>
+
+      <div class="image-panel">
+        <div class="panel-header">
+          <span class="panel-label output">Output: Dehazed Image</span>
+        </div>
+        <div class="image-box" id="outputBox">
+          <span class="placeholder">Result will appear here</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="metrics-panel">
+      <h3>Live Metrics</h3>
+      <div class="metrics-grid" id="metricsGrid">
+        <div class="metric"><span class="metric-label">PSNR</span><span class="metric-value" id="m-psnr">—</span></div>
+        <div class="metric"><span class="metric-label">SSIM</span><span class="metric-value" id="m-ssim">—</span></div>
+        <div class="metric"><span class="metric-label">Entropy</span><span class="metric-value" id="m-entropy">—</span></div>
+        <div class="metric"><span class="metric-label">Edge</span><span class="metric-value" id="m-edge">—</span></div>
+        <div class="metric"><span class="metric-label">Time</span><span class="metric-value" id="m-time">—</span></div>
+        <div class="metric"><span class="metric-label">Haze</span><span class="metric-value" id="m-haze">—</span></div>
+        <div class="metric"><span class="metric-label">Weather</span><span class="metric-value" id="m-weather">—</span></div>
+        <div class="metric"><span class="metric-label">Model</span><span class="metric-value" id="m-model">—</span></div>
+      </div>
+    </div>
+
+    <div class="all-models-panel" id="allModelsPanel" hidden>
+      <h3>All 4 Models — Side by Side</h3>
+      <div class="all-models-grid" id="allModelsGrid"></div>
+    </div>
+  </section>
+
+  <!-- COMPARE TAB (static preview — populate via evaluate.py output) -->
+    <!-- COMPARE TAB (populated live from evaluate.py's output via /api/compare) -->
+  <section id="tab-compare" class="tab-panel">
+    <div class="compare-header">
+      <h3>Model Comparison</h3>
+      <button class="btn btn-upload" id="refreshCompareBtn">Refresh</button>
+    </div>
+    <div id="compareContent">
+      <p class="hint">Loading comparison results...</p>
+    </div>
+  </section>
+
+  <!-- ABOUT TAB -->
+  <section id="tab-about" class="tab-panel">
+    <h3>About DeHazeX Pro</h3>
+    <p>Deep-learning image dehazing comparing AOD-Net (CNN), Attention U-Net (proposed hybrid),
+       and DehazeGAN, evaluated on the RESIDE benchmark using PSNR, SSIM, Entropy, Edge
+       Preservation and inference time. Also includes the classical Dark Channel Prior (DCP)
+       method as a zero-training baseline for comparison.</p>
+    <p class="hint">Built with TensorFlow + Flask.</p>
+  </section>
+</main>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
