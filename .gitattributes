@@ -1,0 +1,4 @@
+*.keras binary
+*.keras -text
+saved_models/*.keras binary
+saved_models/*.keras -text
